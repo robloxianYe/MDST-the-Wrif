@@ -1,3 +1,4 @@
+import pandas as pd
 """
 Checkpoint 1b
 
@@ -19,18 +20,58 @@ This should load the data, perform preprocessing, and save the output to the dat
 """
 
 def remove_percents(df, col):
+    percentList = []
+    for char in df[col]:
+        char = str(char)
+        if len(char) > 0:
+            if char[0] != "n":
+                char = int(float(char[:len(char)-1]))
+        percentList.append(char)
+    df[col] = percentList
     return df
 
 def fill_zero_iron(df):
+    iron = []
+    col = df["Iron (% DV)"]
+    for char in col:
+        if type(char) is str:
+            iron.append('0')
+        else:
+            iron.append(char)
+    df['Iron (% DV)'] = iron
     return df
     
 def fix_caffeine(df):
+    caffeine = []
+    for char in df['Caffeine (mg)']:
+        if type(char) is float:
+            caffeine.append(0)
+        elif char[len(char)-1] == "s":
+            caffeine.append(0)
+        else:
+            caffeine.append(char)
+    df['Caffeine (mg)'] = caffeine
     return df
 
 def standardize_names(df):
+    columns = []
+    for col in df:
+        col = col.lower()
+        if col[len(col)-1] == ")":
+            openindex = col.index("(")
+            col = col[0:openindex:1]
+        columns.append(col)
+    df.columns = columns
     return df
 
 def fix_strings(df, col):
+    strings = []
+    for char in df[col]:
+        char = char.encode("ascii", "ignore")
+        char = char.lower()
+        char = str(char)
+        strings.append(char[2:len(char)-1])
+    df[col] = strings
     return df
 
 
@@ -66,7 +107,7 @@ def main():
     
     # now that the data is all clean, save your output to the `data` folder as 'starbucks_clean.csv'
     # you will use this file in checkpoint 2
-    
+    df.to_csv('../data/starbucks_clean.csv')
     
 
 if __name__ == "__main__":
